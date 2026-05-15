@@ -1026,17 +1026,20 @@
   });
 
   function toNumber(value) {
-    const number = Number(String(value ?? "").replace(/[$,%\s,]/g, ""));
-    return Number.isFinite(number) ? number : 0;
+    const raw = String(value ?? "").replace(/[$,%\s,]/g, "");
+    if (raw === "") return NaN;
+    const number = Number(raw);
+    return Number.isFinite(number) ? number : NaN;
   }
 
   function money(value) {
-    return toNumber(value).toLocaleString("en-US", { style: "currency", currency: "USD" });
+    const number = toNumber(value);
+    return Number.isFinite(number) ? number.toLocaleString("en-US", { style: "currency", currency: "USD" }) : "Invalid";
   }
 
   function decimal(value, digits = 2) {
     const number = toNumber(value);
-    return number.toLocaleString("en-US", { maximumFractionDigits: digits, minimumFractionDigits: digits });
+    return Number.isFinite(number) ? number.toLocaleString("en-US", { maximumFractionDigits: digits, minimumFractionDigits: digits }) : "Invalid";
   }
 
   function findField(names) {
@@ -1095,6 +1098,10 @@
     const rate = toNumber(monthlyRate);
     const pay = toNumber(payment);
     const totalMonths = Math.max(1, Math.round(toNumber(months)));
+    if (!Number.isFinite(balance) || !Number.isFinite(rate) || !Number.isFinite(pay) || !Number.isFinite(totalMonths)) {
+      target.innerHTML = '<div class="calc-error" role="alert">Please enter valid amortization values.</div>';
+      return false;
+    }
     const rows = [];
     let totalInterest = 0;
 
@@ -1121,8 +1128,12 @@
     }
 
     let balance = toNumber(startAmount);
-    const factor = toNumber(growthFactor) || 1;
+    const factor = toNumber(growthFactor);
     const count = Math.max(1, Math.round(toNumber(periods)));
+    if (!Number.isFinite(balance) || !Number.isFinite(factor) || !Number.isFinite(count)) {
+      target.innerHTML = '<div class="calc-error" role="alert">Please enter valid schedule values.</div>';
+      return false;
+    }
     const rows = [];
     for (let i = 1; i <= count; i += 1) {
       const previous = balance;
@@ -1181,10 +1192,40 @@
     return location.pathname.split("/").pop() || "index.html";
   }
 
-  function fieldValue(form, name, fallback = 0) {
+  function fieldValue(form, name, fallback = NaN) {
     const field = form?.elements?.[name] || document.getElementById(name);
     const value = toNumber(field?.value);
     return Number.isFinite(value) ? value : fallback;
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function showValidationError(form, message) {
+    inlineResult(form, `<div class="calc-error" role="alert">${escapeHtml(message)}</div>`);
+    showToast(message);
+    return false;
+  }
+
+  function requireNumber(form, name, label, options = {}) {
+    const raw = rawField(form, name);
+    const value = fieldValue(form, name);
+    if (raw === "" || !Number.isFinite(value)) {
+      throw new Error(`${label} must be a valid number.`);
+    }
+    if (options.min != null && value < options.min) {
+      throw new Error(`${label} must be ${options.min === 0 ? "0 or greater" : `at least ${options.min}`}.`);
+    }
+    if (options.positive && value <= 0) {
+      throw new Error(`${label} must be greater than 0.`);
+    }
+    return value;
   }
 
   function compoundFactor(ratePercent, years, compound) {
@@ -1294,16 +1335,23 @@
       const type = String(form.elements.ctype?.value || "standard");
       let heightM = 0;
       let weightKg = 0;
-      if (type === "metric") {
-        heightM = fieldValue(form, "cheightmeter") / 100;
-        weightKg = fieldValue(form, "ckg");
-      } else {
-        const inches = fieldValue(form, "cheightfeet") * 12 + fieldValue(form, "cheightinch");
-        heightM = inches * 0.0254;
-        weightKg = fieldValue(form, "cpound") * 0.45359237;
+      try {
+        if (type === "metric") {
+          heightM = requireNumber(form, "cheightmeter", "Height", { positive: true }) / 100;
+          weightKg = requireNumber(form, "ckg", "Weight", { positive: true });
+        } else {
+          const feet = requireNumber(form, "cheightfeet", "Height feet", { min: 0 });
+          const inchesPart = requireNumber(form, "cheightinch", "Height inches", { min: 0 });
+          const inches = feet * 12 + inchesPart;
+          heightM = inches * 0.0254;
+          weightKg = requireNumber(form, "cpound", "Weight", { positive: true }) * 0.45359237;
+        }
+      } catch (error) {
+        showValidationError(form, error.message);
+        return;
       }
-      if (!heightM || !weightKg) {
-        showToast("Please enter height and weight.");
+      if (!(heightM > 0) || !(weightKg > 0)) {
+        showValidationError(form, "Please enter height and weight.");
         return;
       }
       const bmi = weightKg / (heightM * heightM);
@@ -1332,10 +1380,14 @@
   }
 
   function amortizedPayment(principal, ratePercent, months) {
-    const monthlyRate = toNumber(ratePercent) / 100 / 12;
-    const count = Math.max(1, Math.round(toNumber(months)));
+    const amount = toNumber(principal);
+    const rate = toNumber(ratePercent);
+    const term = toNumber(months);
+    if (!Number.isFinite(amount) || !Number.isFinite(rate) || !Number.isFinite(term) || term <= 0) return NaN;
+    const monthlyRate = rate / 100 / 12;
+    const count = Math.max(1, Math.round(term));
     if (!monthlyRate) return principal / count;
-    return principal * monthlyRate / (1 - Math.pow(1 + monthlyRate, -count));
+    return amount * monthlyRate / (1 - Math.pow(1 + monthlyRate, -count));
   }
 
   function enhanceLoanCalculator() {
@@ -1348,10 +1400,26 @@
       markLiveForm(form1);
       form1.addEventListener("submit", (event) => {
         event.preventDefault();
-        const principal = fieldValue(form1, "cloanamount");
-        const months = Math.max(1, fieldValue(form1, "cloanterm") * 12 + fieldValue(form1, "cloantermmonth"));
-        const rate = fieldValue(form1, "cinterestrate");
+        let principal;
+        let months;
+        let rate;
+        try {
+          principal = requireNumber(form1, "cloanamount", "Loan amount", { positive: true });
+          months = requireNumber(form1, "cloanterm", "Loan term years", { min: 0 }) * 12 + requireNumber(form1, "cloantermmonth", "Loan term months", { min: 0 });
+          rate = requireNumber(form1, "cinterestrate", "Interest rate");
+        } catch (error) {
+          showValidationError(form1, error.message);
+          return;
+        }
+        if (!(months > 0)) {
+          showValidationError(form1, "Loan term must be greater than 0.");
+          return;
+        }
         const payment = amortizedPayment(principal, rate, months);
+        if (!Number.isFinite(payment)) {
+          showValidationError(form1, "Please enter valid loan values.");
+          return;
+        }
         const total = payment * months;
         const interest = total - principal;
         const target = document.getElementById("lcamotable1");
@@ -1376,10 +1444,27 @@
       markLiveForm(form2);
       form2.addEventListener("submit", (event) => {
         event.preventDefault();
-        const principal = fieldValue(form2, "c2loanamount");
-        const years = fieldValue(form2, "c2loanterm") + fieldValue(form2, "c2loantermmonth") / 12;
-        const factor = compoundFactor(fieldValue(form2, "c2interestrate"), years, form2.elements.c2compound?.value);
+        let principal;
+        let years;
+        let rate;
+        try {
+          principal = requireNumber(form2, "c2loanamount", "Loan amount", { positive: true });
+          years = requireNumber(form2, "c2loanterm", "Loan term years", { min: 0 }) + requireNumber(form2, "c2loantermmonth", "Loan term months", { min: 0 }) / 12;
+          rate = requireNumber(form2, "c2interestrate", "Interest rate");
+        } catch (error) {
+          showValidationError(form2, error.message);
+          return;
+        }
+        if (!(years > 0)) {
+          showValidationError(form2, "Loan term must be greater than 0.");
+          return;
+        }
+        const factor = compoundFactor(rate, years, form2.elements.c2compound?.value);
         const due = principal * factor;
+        if (!Number.isFinite(due)) {
+          showValidationError(form2, "Please enter valid loan values.");
+          return;
+        }
         const interest = due - principal;
         const target = document.getElementById("lcamotable2");
         if (target) target.innerHTML = "";
@@ -1402,10 +1487,27 @@
       markLiveForm(form3);
       form3.addEventListener("submit", (event) => {
         event.preventDefault();
-        const due = fieldValue(form3, "c3loanamount");
-        const years = fieldValue(form3, "c3loanterm") + fieldValue(form3, "c3loantermmonth") / 12;
-        const factor = compoundFactor(fieldValue(form3, "c3interestrate"), years, form3.elements.c3compound?.value);
+        let due;
+        let years;
+        let rate;
+        try {
+          due = requireNumber(form3, "c3loanamount", "Amount due", { positive: true });
+          years = requireNumber(form3, "c3loanterm", "Loan term years", { min: 0 }) + requireNumber(form3, "c3loantermmonth", "Loan term months", { min: 0 }) / 12;
+          rate = requireNumber(form3, "c3interestrate", "Interest rate");
+        } catch (error) {
+          showValidationError(form3, error.message);
+          return;
+        }
+        if (!(years > 0)) {
+          showValidationError(form3, "Loan term must be greater than 0.");
+          return;
+        }
+        const factor = compoundFactor(rate, years, form3.elements.c3compound?.value);
         const present = factor ? due / factor : due;
+        if (!Number.isFinite(present)) {
+          showValidationError(form3, "Please enter valid loan values.");
+          return;
+        }
         const interest = due - present;
         const target = document.getElementById("lcamotable3");
         if (target) target.innerHTML = "";
@@ -1521,21 +1623,44 @@
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const price = fieldValue(form, "chouseprice");
-      const downPayment = unitAmount(fieldValue(form, "cdownpayment"), form.elements.cdownpaymentunit?.value, price);
+      let price;
+      let downPaymentInput;
+      let years;
+      let rate;
+      let yearlyTax = 0;
+      let yearlyInsurance = 0;
+      let pmiInput = 0;
+      let yearlyPmi = 0;
+      let yearlyHoa = 0;
+      let yearlyOther = 0;
+      const includeCosts = form.elements.caddoptional?.checked !== false;
+      try {
+        price = requireNumber(form, "chouseprice", "Home price", { positive: true });
+        downPaymentInput = requireNumber(form, "cdownpayment", "Down payment", { min: 0 });
+        years = requireNumber(form, "cloanterm", "Loan term", { positive: true });
+        rate = requireNumber(form, "cinterestrate", "Interest rate");
+        if (includeCosts) {
+          yearlyTax = unitAmount(requireNumber(form, "cpropertytaxes", "Property taxes", { min: 0 }), form.elements.cpropertytaxesunit?.value, price);
+          yearlyInsurance = unitAmount(requireNumber(form, "chomeins", "Home insurance", { min: 0 }), form.elements.chomeinsunit?.value, price);
+          pmiInput = requireNumber(form, "cpmi", "PMI", { min: 0 });
+          yearlyHoa = unitAmount(requireNumber(form, "choa", "HOA", { min: 0 }), form.elements.choaunit?.value, price);
+          yearlyOther = unitAmount(requireNumber(form, "cothercost", "Other costs", { min: 0 }), form.elements.cothercostunit?.value, price);
+        }
+      } catch (error) {
+        showValidationError(form, error.message);
+        return;
+      }
+      const downPayment = unitAmount(downPaymentInput, form.elements.cdownpaymentunit?.value, price);
       const principal = Math.max(0, price - downPayment);
-      const years = Math.max(1, fieldValue(form, "cloanterm"));
+      if (includeCosts) yearlyPmi = unitAmount(pmiInput, form.elements.cpmiunit?.value, principal);
       const months = Math.round(years * 12);
-      const rate = fieldValue(form, "cinterestrate");
       const principalAndInterest = amortizedPayment(principal, rate, months);
+      if (!Number.isFinite(principalAndInterest)) {
+        showValidationError(form, "Please enter valid mortgage values.");
+        return;
+      }
       const totalPayments = principalAndInterest * months;
       const totalInterest = totalPayments - principal;
-      const includeCosts = form.elements.caddoptional?.checked !== false;
-      const yearlyTax = includeCosts ? unitAmount(fieldValue(form, "cpropertytaxes"), form.elements.cpropertytaxesunit?.value, price) : 0;
-      const yearlyInsurance = includeCosts ? unitAmount(fieldValue(form, "chomeins"), form.elements.chomeinsunit?.value, price) : 0;
-      const yearlyPmi = includeCosts ? unitAmount(fieldValue(form, "cpmi"), form.elements.cpmiunit?.value, principal) : 0;
-      const yearlyHoa = includeCosts ? unitAmount(fieldValue(form, "choa"), form.elements.choaunit?.value, price) : 0;
-      const yearlyOther = includeCosts ? unitAmount(fieldValue(form, "cothercost"), form.elements.cothercostunit?.value, price) : 0;
       const monthlyTax = yearlyTax / 12;
       const monthlyInsurance = yearlyInsurance / 12;
       const monthlyPmi = yearlyPmi / 12;
@@ -1580,16 +1705,31 @@
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const type = form.elements.ctype?.value || "standard";
-      const months = Math.max(1, Math.round(fieldValue(form, "cloanterm")));
-      const rate = fieldValue(form, "cinterestrate");
+      let months;
+      let rate;
+      let price;
+      let incentive;
+      let downPayment;
+      let tradeIn;
+      let tradeOwed;
+      let salesTaxRate;
+      let fees;
+      try {
+        months = Math.round(requireNumber(form, "cloanterm", "Loan term", { positive: true }));
+        rate = requireNumber(form, "cinterestrate", "Interest rate");
+        price = requireNumber(form, "csaleprice", "Auto price", { positive: true });
+        incentive = requireNumber(form, "cincentive", "Cash incentives", { min: 0 });
+        downPayment = requireNumber(form, "cdownpayment", "Down payment", { min: 0 });
+        tradeIn = requireNumber(form, "ctradeinvalue", "Trade-in value", { min: 0 });
+        tradeOwed = requireNumber(form, "ctradeinowned", "Amount owed on trade-in", { min: 0 });
+        salesTaxRate = requireNumber(form, "csaletax", "Sales tax", { min: 0 });
+        fees = requireNumber(form, "ctitlereg", "Title and fees", { min: 0 });
+      } catch (error) {
+        showValidationError(form, error.message);
+        return;
+      }
       const monthlyRate = rate / 100 / 12;
-      const price = fieldValue(form, "csaleprice");
-      const incentive = fieldValue(form, "cincentive");
-      const downPayment = fieldValue(form, "cdownpayment");
-      const tradeIn = fieldValue(form, "ctradeinvalue");
-      const tradeOwed = fieldValue(form, "ctradeinowned");
-      const salesTax = Math.max(0, price * fieldValue(form, "csaletax") / 100);
-      const fees = fieldValue(form, "ctitlereg");
+      const salesTax = Math.max(0, price * salesTaxRate / 100);
       const financeFees = form.elements.cttrinloan?.checked;
       let loanAmount = Math.max(0, price - incentive - downPayment - tradeIn + tradeOwed);
       let upfront = Math.max(0, downPayment + salesTax + fees - tradeIn + tradeOwed);
@@ -1600,10 +1740,19 @@
 
       let payment = amortizedPayment(loanAmount, rate, months);
       let reverseNote = "";
-      if (type === "reverse" && fieldValue(form, "cmonthlypay")) {
-        payment = fieldValue(form, "cmonthlypay");
+      if (type === "reverse" && hasFieldValue(form, "cmonthlypay")) {
+        try {
+          payment = requireNumber(form, "cmonthlypay", "Monthly payment", { positive: true });
+        } catch (error) {
+          showValidationError(form, error.message);
+          return;
+        }
         loanAmount = monthlyRate ? payment * (1 - Math.pow(1 + monthlyRate, -months)) / monthlyRate : payment * months;
         reverseNote = "<div class=\"dynamic-result-note\">Reverse mode estimates the financeable loan amount from the monthly payment.</div>";
+      }
+      if (!Number.isFinite(payment) || !Number.isFinite(loanAmount)) {
+        showValidationError(form, "Please enter valid auto loan values.");
+        return;
       }
       const totalPayments = payment * months;
       const totalInterest = Math.max(0, totalPayments - loanAmount);
@@ -1636,7 +1785,8 @@
   }
 
   function getDatePart(form, prefix, part) {
-    return Number(form.elements[`${prefix}${part}`]?.value || 0);
+    const value = toNumber(form.elements[`${prefix}${part}`]?.value);
+    return Number.isInteger(value) ? value : NaN;
   }
 
   function validDate(year, month, day) {
@@ -1696,13 +1846,231 @@
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const effective = effectiveAnnualRate(fieldValue(form, "cinterestrate"), form.elements.cincompound?.value);
+      let rate;
+      try {
+        rate = requireNumber(form, "cinterestrate", "Interest rate");
+      } catch (error) {
+        showValidationError(form, error.message);
+        return;
+      }
+      const effective = effectiveAnnualRate(rate, form.elements.cincompound?.value);
       const output = nominalFromEffective(effective, form.elements.coutcompound?.value);
+      if (!Number.isFinite(output)) {
+        showValidationError(form, "Please enter a valid interest rate.");
+        return;
+      }
       inlineResult(form, `
         <div class="h2result">Equivalent Rate: ${compactNumber(output, 5)}%</div>
         <div class="dynamic-result-note">Effective annual rate: ${compactNumber(effective * 100, 5)}%.</div>
       `);
       rememberCalculator();
+    });
+  }
+
+  function inlineRows(form, title, rows, note = "Calculated instantly in your browser.") {
+    inlineResult(form, `
+      <div class="h2result">${escapeHtml(title)}</div>
+      <table class="cinfoT">${rows.map((row) => `<tr><td>${escapeHtml(row[0])}</td><td align="right"><b>${escapeHtml(row[1])}</b></td></tr>`).join("")}</table>
+      <div class="dynamic-result-note">${escapeHtml(note)}</div>
+    `);
+    rememberCalculator();
+  }
+
+  function formulaReview(form, reason) {
+    inlineRows(form, "NEEDS FORMULA REVIEW", [
+      ["Status", "NEEDS FORMULA REVIEW"],
+      ["Reason", reason]
+    ], "Calculation stopped. No generic summary or fabricated formula was generated.");
+  }
+
+  function gradePointFromLetter(letter) {
+    return {
+      "a+": 4.3,
+      a: 4,
+      "a-": 3.7,
+      "b+": 3.3,
+      b: 3,
+      "b-": 2.7,
+      "c+": 2.3,
+      c: 2,
+      "c-": 1.7,
+      "d+": 1.3,
+      d: 1,
+      "d-": 0.7,
+      f: 0
+    }[String(letter || "").toLowerCase()];
+  }
+
+  function enhanceGpaCalculator() {
+    if (currentPage() !== "gpa-calculator.html") return;
+    const mainForm = document.forms.gpaform;
+    const planningForm = document.forms.gparaiseform;
+
+    if (mainForm) {
+      markLiveForm(mainForm);
+      mainForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const format = checkedValue(mainForm, "format", "l");
+        if (format === "p") {
+          formulaReview(mainForm, "Percentage GPA scales vary by school and no verified percentage-to-point table is defined in this static page.");
+          return;
+        }
+        const semesters = Math.max(1, Math.min(26, Math.round(fieldValue(mainForm, "sc", 1))));
+        let totalCredits = 0;
+        let totalPoints = 0;
+        try {
+          for (let s = 1; s <= semesters; s += 1) {
+            const prefix = String.fromCharCode(96 + s);
+            const count = Math.max(0, Math.round(fieldValue(mainForm, `n${prefix}`, s === 1 ? 5 : 0)));
+            for (let i = 1; i <= count; i += 1) {
+              const creditName = `c${prefix}${i}`;
+              const letterName = `l${prefix}${i}`;
+              const scoreName = `s${prefix}${i}`;
+              const hasCredit = hasFieldValue(mainForm, creditName);
+              const hasGrade = format === "l" ? checkedValue(mainForm, letterName, "") !== "" : hasFieldValue(mainForm, scoreName);
+              if (!hasCredit && !hasGrade) continue;
+              if (!hasCredit || !hasGrade) throw new Error("Each GPA row needs both credits and a grade.");
+              const credits = requireNumber(mainForm, creditName, "Credits", { positive: true });
+              const letter = checkedValue(mainForm, letterName, "");
+              if (format === "l" && /^(p|np)$/i.test(letter)) continue;
+              const points = format === "l" ? gradePointFromLetter(letter) : requireNumber(mainForm, scoreName, "Grade points", { min: 0 });
+              if (!Number.isFinite(points)) throw new Error("Grade values must be valid numbers or supported letter grades.");
+              totalCredits += credits;
+              totalPoints += credits * points;
+            }
+          }
+          if (mainForm.elements.prior?.checked) {
+            const priorGpa = requireNumber(mainForm, "pgpa", "Prior GPA", { min: 0 });
+            const priorCredits = requireNumber(mainForm, "pcredit", "Prior credits", { positive: true });
+            totalCredits += priorCredits;
+            totalPoints += priorGpa * priorCredits;
+          }
+        } catch (error) {
+          showValidationError(mainForm, error.message);
+          return;
+        }
+        if (!(totalCredits > 0)) {
+          showValidationError(mainForm, "Enter at least one course with credits and grade.");
+          return;
+        }
+        inlineRows(mainForm, "GPA Result", [["GPA", compactNumber(totalPoints / totalCredits, 3)], ["Credits counted", compactNumber(totalCredits, 2)]]);
+      });
+    }
+
+    if (planningForm) {
+      markLiveForm(planningForm);
+      planningForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        try {
+          const currentGpa = requireNumber(planningForm, "grcCurrentGPA", "Current GPA", { min: 0 });
+          const targetGpa = requireNumber(planningForm, "grcTargetGPA", "Target GPA", { min: 0 });
+          const currentCredits = requireNumber(planningForm, "grcCurrentCredit", "Current credits", { min: 0 });
+          const additionalCredits = requireNumber(planningForm, "grcAdditionalCredit", "Additional credits", { positive: true });
+          const needed = (targetGpa * (currentCredits + additionalCredits) - currentGpa * currentCredits) / additionalCredits;
+          inlineRows(planningForm, "Required Future GPA", [["Required GPA", compactNumber(needed, 3)], ["Status", needed > 4.3 ? "Above the A+ scale shown on this page" : "Within the shown letter-grade scale"]]);
+        } catch (error) {
+          showValidationError(planningForm, error.message);
+        }
+      });
+    }
+  }
+
+  function currencyRate(code) {
+    const data = Array.isArray(window.listsArrayData) ? window.listsArrayData : [];
+    const row = data.find((item) => item[0] === code);
+    return row ? Number(row[1]) : NaN;
+  }
+
+  function enhanceCurrencyCalculator() {
+    if (currentPage() !== "currency-calculator.html") return;
+    const form = document.forms.calform;
+    const customForm = document.forms.calform2;
+    if (form) {
+      markLiveForm(form);
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        try {
+          const amount = requireNumber(form, "eamount", "Amount", { min: 0 });
+          const from = form.elements.efrom?.value;
+          const to = form.elements.eto?.value;
+          const fromRate = currencyRate(from);
+          const toRate = currencyRate(to);
+          if (!Number.isFinite(fromRate) || !Number.isFinite(toRate)) {
+            formulaReview(form, "Currency rate data is missing for the selected currencies.");
+            return;
+          }
+          const converted = amount / fromRate * toRate;
+          inlineRows(form, "Currency Result", [[`${amount} ${from}`, `${compactNumber(converted, 6)} ${to}`], ["Rate used", `1 ${from} = ${compactNumber(toRate / fromRate, 8)} ${to}`]], "Uses the static exchange-rate table shipped with this page.");
+        } catch (error) {
+          showValidationError(form, error.message);
+        }
+      });
+    }
+    if (customForm) {
+      markLiveForm(customForm);
+      customForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        try {
+          const rate = requireNumber(customForm, "erate", "Exchange rate", { positive: true });
+          const amount = requireNumber(customForm, "eamount2", "Amount", { min: 0 });
+          inlineRows(customForm, "Currency Result", [["Converted amount", compactNumber(amount * rate, 6)]], "Uses the custom exchange rate entered on this page.");
+        } catch (error) {
+          showValidationError(customForm, error.message);
+        }
+      });
+    }
+  }
+
+  function financePeriodRate(form) {
+    const annualRate = requireNumber(form, "cinterestratev", "Interest rate") / 100;
+    const paymentsPerYear = requireNumber(form, "cpy", "Periods per year", { positive: true });
+    const compoundsPerYear = requireNumber(form, "ccy", "Compounds per year", { positive: true });
+    return Math.pow(1 + annualRate / compoundsPerYear, compoundsPerYear / paymentsPerYear) - 1;
+  }
+
+  function annuityFactor(rate, periods, due) {
+    if (!rate) return periods;
+    const factor = (Math.pow(1 + rate, periods) - 1) / rate;
+    return due ? factor * (1 + rate) : factor;
+  }
+
+  function enhanceFinanceCalculator() {
+    if (currentPage() !== "finance-calculator.html") return;
+    const form = document.forms.calform;
+    if (!form) return;
+    markLiveForm(form);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const mode = String(form.elements.ctype?.value || "endamount");
+      if (mode === "returnrate" || mode === "investlength") {
+        formulaReview(form, "Solving finance calculator I/Y or N needs a verified iterative formula before production use.");
+        return;
+      }
+      try {
+        const periods = requireNumber(form, "cyearsv", "Number of periods", { positive: true });
+        const rate = financePeriodRate(form);
+        const due = checkedValue(form, "ciadditionat1", "end") === "beginning";
+        const growth = Math.pow(1 + rate, periods);
+        const annuity = annuityFactor(rate, periods, due);
+        if (!Number.isFinite(growth) || !Number.isFinite(annuity)) throw new Error("Finance inputs are outside the supported range.");
+        if (mode === "endamount") {
+          const pv = requireNumber(form, "cstartingprinciplev", "Present value");
+          const pmt = requireNumber(form, "ccontributeamountv", "Payment");
+          inlineRows(form, "Finance Result", [["FV", money(-(pv * growth + pmt * annuity))], ["Periodic rate", `${compactNumber(rate * 100, 6)}%`]]);
+        } else if (mode === "contributeamount") {
+          const pv = requireNumber(form, "cstartingprinciplev", "Present value");
+          const fv = requireNumber(form, "ctargetamountv", "Future value");
+          inlineRows(form, "Finance Result", [["PMT", money(-(fv + pv * growth) / annuity)], ["Periodic rate", `${compactNumber(rate * 100, 6)}%`]]);
+        } else if (mode === "startingamount") {
+          const pmt = requireNumber(form, "ccontributeamountv", "Payment");
+          const fv = requireNumber(form, "ctargetamountv", "Future value");
+          inlineRows(form, "Finance Result", [["PV", money(-(fv + pmt * annuity) / growth)], ["Periodic rate", `${compactNumber(rate * 100, 6)}%`]]);
+        } else {
+          formulaReview(form, "This finance mode is not wired to a verified static formula.");
+        }
+      } catch (error) {
+        showValidationError(form, error.message);
+      }
     });
   }
 
@@ -1714,19 +2082,32 @@
       "mortgage-calculator.html",
       "auto-loan-calculator.html",
       "age-calculator.html",
-      "compound-interest-calculator.html"
+      "compound-interest-calculator.html",
+      "gpa-calculator.html",
+      "currency-calculator.html",
+      "finance-calculator.html"
     ]);
     if (livePages.has(currentPage())) return;
     const isToolPage = /calculator|converter|generator|counter|roller|encode|decode/i.test(currentPage());
-    const title = isToolPage
-      ? "This calculator is being upgraded for instant results."
-      : "This form is temporarily unavailable.";
-    const message = isToolPage
-      ? "This page is temporarily preventing old static submissions so it does not show stale example answers. The reference content remains available while its formula module is added."
-      : "This static page is preventing old form submissions so it does not send you to a stale or unavailable response. The page content remains available.";
-    const toast = isToolPage
-      ? "This tool is being upgraded for instant custom results."
-      : "This form is temporarily unavailable.";
+    if (isToolPage) {
+      document.querySelectorAll("form").forEach((form) => {
+        if (form.dataset.dynamicCalculator === "true") return;
+        if (form.name === "calcSearchForm") return;
+        if (form.hasAttribute("onsubmit")) return;
+        if (!form.querySelector('input[type="submit"], input[type="image"], button[type="submit"]')) return;
+        form.dataset.staticCalculatorGuard = "calculator";
+        form.addEventListener("submit", (event) => {
+          if (event.defaultPrevented) return;
+          event.preventDefault();
+          formulaReview(form, "No verified domain-specific formula is wired for this static calculator form.");
+          showToast("This calculator needs formula review before production use.");
+        });
+      });
+      return;
+    }
+    const title = "This form is temporarily unavailable.";
+    const message = "This static page is preventing old form submissions so it does not send you to a stale or unavailable response. The page content remains available.";
+    const toast = "This form is temporarily unavailable.";
 
     document.querySelectorAll("form").forEach((form) => {
       if (form.dataset.dynamicCalculator === "true") return;
@@ -1815,7 +2196,7 @@
 
   function registerServiceWorker() {
     if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
-    navigator.serviceWorker.register(getRelativeUrl("sw.js")).catch(() => undefined);
+    navigator.serviceWorker.register(getRelativeUrl("sw.js?v=20260515-final")).catch(() => undefined);
   }
 
   onReady(() => {
@@ -1829,6 +2210,9 @@
     enhanceAutoLoanCalculator();
     enhanceAgeCalculator();
     enhanceCompoundInterestCalculator();
+    enhanceGpaCalculator();
+    enhanceCurrencyCalculator();
+    enhanceFinanceCalculator();
     enhanceLegacyFormSafety();
     rememberCalculator();
     renderRecentCalculators();

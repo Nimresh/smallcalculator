@@ -3,7 +3,7 @@
 <head>
 	<title>Resistor Calculator</title>
 	<meta name="description" content="This resistor calculator converts the ohm value and tolerance based on resistor color codes and determines the resistances of resistors in parallel or series." />
-	<link rel="stylesheet" href="style.css" /><script src="js/common.js" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="stylesheet" href="style.css" /><script src="js/common.js?v=20260515-final" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
 	<link rel="manifest" href="manifest.json">	<link rel="canonical" href="https://smallcalculator.net/resistor-calculator.html" />
@@ -145,7 +145,7 @@ function changeBand(cbIn){
 		document.getElementById("tolerance").style.display = "block";
 		document.getElementById("temperaturecoefficient").style.display = "block";
 	}
-	document.getElementById("bandnumberpicture").innerHTML = '<img alt="" src="img/resistor/'+cbIn+'-band.svg">';
+	document.getElementById("bandnumberpicture").innerHTML = '<img alt="resistor bands" src="img/resistor/'+cbIn+'-band.svg" width="300" height="464">';
 }
 changeBand(4);</script>
 

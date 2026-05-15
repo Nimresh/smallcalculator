@@ -3,7 +3,7 @@
 <head>
 	<title>Protein Calculator</title>
 	<meta name="description" content="This free protein calculator estimates the amount of protein a person needs each day to remain healthy based on certain averages and recommendations." />
-	<link rel="stylesheet" href="style.css" /><script src="js/common.js" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="stylesheet" href="style.css" /><script src="js/common.js?v=20260515-final" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
 	<link rel="manifest" href="manifest.json">	<link rel="canonical" href="https://smallcalculator.net/protein-calculator.html" />
@@ -85,7 +85,7 @@
 		<div id="ccsettingtitle" style="margin: 10px 0px;"><b><a href="#" onclick="cshmoreoption(1);return false;">+ Settings</a></b></div>
 		<div id="ccsettingcontent" style="display: none;">
 			<input type="hidden" name="cmop" id="cmoreoption" value="0">
-			<div><b>BMR estimation formula:</b> <img alt="" class="ttimg" src="img/svg/help.svg" onmouseover="tooltip.show('The Katch-McArdle Formula can be more accurate if you are lean and know your body fat percentage.', '');" onmouseout="tooltip.hide();"></div>
+			<div><b>BMR estimation formula:</b> <img alt="" class="ttimg" src="img/svg/help.svg" onmouseover="tooltip.show('The Katch-McArdle Formula can be more accurate if you are lean and know your body fat percentage.', '');" onmouseout="tooltip.hide();" width="16" height="16"></div>
 			<div>
 				<div><label for="cformula1" class="cbcontainer"><input type="radio" name="cformula" id="cformula1" value="m" checked /><span class="rbmark"></span> Mifflin St Jeor</label></div>
 				<div><label for="cformula2" class="cbcontainer"><input type="radio" name="cformula" id="cformula2" value="k"  /><span class="rbmark"></span> Katch-McArdle</label> &nbsp; <a href="body-fat-calculator.html">Body Fat:</a> <input type="text" name="cfatpct" value="20" class="in4char inpct" onKeyUp="iptfieldCheck(this, '', 'pn');"></div>

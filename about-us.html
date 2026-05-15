@@ -3,7 +3,7 @@
 <head>
 	<title>About Us</title>
 	<meta name="description" content="About us of SmallCalculator.net." />
-	<link rel="stylesheet" href="style.css" /><script src="js/common.js" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="stylesheet" href="style.css" /><script src="js/common.js?v=20260515-final" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
 	<link rel="manifest" href="manifest.json">	<link rel="canonical" href="https://smallcalculator.net/about-us.html" />
@@ -52,10 +52,10 @@ A: For registered users, a button is available to delete your entire registratio
 <a name="contact"></a>
 <br>
 <h2>Contact Us</h2>
-<p>We can be reached via the following form. Normally, we will respond within 2 business days.</p>
+<p>The contact form is coming soon. No message is sent from this static site yet.</p>
 <noscript><font color=red><center><b>This site needs JavaScript enabled to run properly. Please change your browser settings!</b></center></font></noscript>
 
-<form name="contactF" action="about-us.html#contact" method="post">
+<form name="contactF" onsubmit="alert('The contact form is coming soon.'); return false;">
 <table class="bodytext">
 <tr>
 	<td valign="top"><strong>Your name: </strong></td>
@@ -71,12 +71,12 @@ A: For registered users, a button is available to delete your entire registratio
 </tr>
 <tr>
 	<td><input type="hidden" name="validateID" value="123536"></td>
-	<td><input type="submit" name="Submits" value="Send" onClick="return validateForm();" style="width:100%; font-size:18px; text-align:center; font-weight:bold; padding:5px;background-image:none;"></td>
+	<td><input type="submit" name="Submits" value="Send" disabled style="width:100%; font-size:18px; text-align:center; font-weight:bold; padding:5px;background-image:none;"></td>
 </tr>
 </table>
 </form><br><br>
 <script type="text/javascript">
-function validateForm() {document.contactF.validateID.value = String(this.location).toLowerCase();return true;}
+function validateForm() {alert('The contact form is coming soon.');return false;}
 </script>
 <p class="smalltext">A public mailing address has not been added yet.</p>
 

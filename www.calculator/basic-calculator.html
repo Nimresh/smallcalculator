@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Basic Calculator</title>
+	<meta name="description" content="This free online calculator can be used for basic computations such as addition, subtraction, multiplication, division, and square roots." />
+	<link rel="stylesheet" href="style.css" /><script src="js/common.js?v=20260515-final" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
+	<link rel="manifest" href="manifest.json"><link rel="stylesheet" href="css/sci.css" />	<script src="js/scientific3.js"></script>
+	<link rel="canonical" href="https://smallcalculator.net/basic-calculator.html" />
+	<meta name="theme-color" content="#102033">
+	<meta name="referrer" content="strict-origin-when-cross-origin">
+	<meta property="og:site_name" content="SmallCalculator.net">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Basic Calculator">
+	<meta property="og:description" content="This free online calculator can be used for basic computations such as addition, subtraction, multiplication, division, and square roots.">
+	<meta property="og:url" content="https://smallcalculator.net/basic-calculator.html">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Basic Calculator">
+	<meta name="twitter:description" content="This free online calculator can be used for basic computations such as addition, subtraction, multiplication, division, and square roots.">
+	<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Basic Calculator","url":"https://smallcalculator.net/basic-calculator.html","description":"This free online calculator can be used for basic computations such as addition, subtraction, multiplication, division, and square roots.","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+</head>
+<body>
+<div id="headerout">
+	<div id="header">
+		<div id="logo"><a href="index.html"><img src="img/svg/calculator-white.svg" width="208" height="22" alt="SmallCalculator.net"></a></div>
+		<div id="login"><a href="my-account/sign-in.html">sign in</a></div>	</div>
+</div>
+<div class="clear"></div><div id="contentout"><div id="content"><div id="breadcrumbs" itemscope itemtype="https://schema.org/BreadcrumbList"><span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="index.html" itemprop="item"><span itemprop="name">home</span></a><meta itemprop="position" content="1" /></span> / <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="math-calculator.html" itemprop="item"><span itemprop="name">math</span></a><meta itemprop="position" content="2" /></span> / <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="basic-calculator.html" itemprop="item"><span itemprop="name">basic calculator</span></a><meta itemprop="position" content="3" /></span></div>		<h1>Basic Calculator</h1>
+<table align="center">
+	<tr><td id="sciout">
+		<div>
+			<div id="sciInPut">&nbsp;</div>
+			<div id="sciOutPut">0</div>
+		</div>
+		<div style="padding-top:3px;">
+			<div><span onclick="r(7)" class="scinm">7</span><span onclick="r(8)" class="scinm">8</span><span onclick="r(9)" class="scinm">9</span><span onclick="r('+')" class="sciop">+</span><span onclick="r('bk')" class="sciop">Back</span></div>
+			<div><span onclick="r(4)" class="scinm">4</span><span onclick="r(5)" class="scinm">5</span><span onclick="r(6)" class="scinm">6</span><span onclick="r('-')" class="sciop">&ndash;</span><span onclick="r('ans')" class="sciop">Ans</span></div>
+			<div><span onclick="r(1)" class="scinm">1</span><span onclick="r(2)" class="scinm">2</span><span onclick="r(3)" class="scinm">3</span><span onclick="r('*')" class="sciop">&#215;</span><span onclick="r('M+')" class="sciop">M+</span></div>
+			<div><span onclick="r(0)" class="scinm">0</span><span onclick="r('.')" class="scinm">.</span><span onclick="r('EXP')" class="sciop">EXP</span><span onclick="r('/')" class="sciop">&#247;</span><span onclick="r('M-')" class="sciop">M-</span></div>
+			<div><span onclick="r('+/-')" class="sciop">&#177;</span><span onclick="r('RND')" class="sciop">RND</span><span onclick="r('C')" class="scieq">AC</span><span onclick="r('=')" class="scieq">=</span><span onclick="r('MR')" class="sciop" id="scimrc">MR</span></div>
+		</div>
+		<div id="scihistory"></div>
+	</td></tr></table>
+<p>Also check the <a href="scientific-calculator.html">scientific calculator</a>.</p>
+
+</div>
+	<div id="right">
+		<div style="padding-top:10px;  min-height:280px; text-align:center;">
+<script async src="js/ads-disabled.js"></script>
+<script>
+  window.googletag = window.googletag || {cmd: []};
+  googletag.cmd.push(function() {
+	googletag.defineSlot('/1057446/Calculator-Top-Right-Desktop', [[300, 250], [336, 280]], 'div-gpt-ad-1589567013929-0').addService(googletag.pubads());
+	googletag.pubads().enableSingleRequest();
+	googletag.enableServices();
+  });
+</script>
+<!-- /1057446/Calculator-Top-Right-Desktop -->
+<div id='div-gpt-ad-1589567013929-0'>
+  <script>
+    googletag.cmd.push(function() { googletag.display('div-gpt-ad-1589567013929-0'); });
+  </script>
+</div>
+</div>
+<form name="calcSearchForm" onsubmit="calcSearch(); return false;" autocomplete="off"><table align="center" id="searchbox"><tr><td><input type="text" name="calcSearchTerm" id="calcSearchTerm" class="inlongest" onkeyup="return calcSearch();"></td><td><span onClick="return calcSearch();" class="bluebtn">Search</span></td></tr><tr><td colspan="2"><div id="calcSearchOut"></div></td></tr></table></form><div id="othercalc"><div id="octitle"><a href="math-calculator.html">Math Calculators</a></div><div id="occontent"><a href="scientific-calculator.html">Scientific</a><a href="fraction-calculator.html">Fraction</a><a href="percent-calculator.html">Percentage</a><a href="triangle-calculator.html">Triangle</a><a href="volume-calculator.html">Volume</a><a href="standard-deviation-calculator.html">Standard Deviation</a><a href="random-number-generator.html">Random Number Generator</a><a href="math-calculator.html">More Math Calculators</a></div><div id="ocother"><a href="financial-calculator.html">Financial</a> | <a href="fitness-and-health-calculator.html">Fitness and Health</a> | <a href="math-calculator.html">Math</a> | <a href="other-calculator.html">Other</a></div></div>	</div>
+</div>
+<div class="clear"></div>
+<div id="footer"><div id="footerin"><div id="footernav"><a href="about-us.html">about us</a> | <a href="sitemap.html">sitemap</a> | <a href="about-us.html#terms">terms of use</a> | <a href="about-us.html#privacy">privacy policy</a> &nbsp;  &copy; 2008 - 2026 <a href="index.html">SmallCalculator.net</a></div></div></div>
+<div class="topNavAbs">
+<a href="financial-calculator.html">Financial</a>
+<a href="fitness-and-health-calculator.html">Fitness &amp; Health</a>
+<a href="math-calculator.html" class="topNavOn">Math</a>
+<a href="other-calculator.html">Other</a>
+</div>
+</body>
+</html>
+
+

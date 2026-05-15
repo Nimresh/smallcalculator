@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="166" height="144" version="1.1" viewBox="0 0 166 144" xmlns="http://www.w3.org/2000/svg">
+<polygon points="3,141 163,141 83,3" style="fill:white;stroke:black;stroke-width:0" />
+<path d="M13 122 A20,20 0 0,1 23,141 " style="fill:none;stroke:blue;stroke-width:1" />
+<path d="M143 141 A20,20 0 0,1 151.2,123 " style="fill:none;stroke:blue;stroke-width:1" />
+<path d="M93 20 A19,19 0 0,1 73,20 " style="fill:none;stroke:blue;stroke-width:1" />
+<polygon points="3,141 163,141 83,3" style="fill:none;stroke:black;stroke-width:2.5" />
+<g font-family="sans-serif" stroke-width="0">
+	<g fill="#00f" font-size="18px">
+		<text x="25" y="133">A</text>
+		<text x="131" y="133">B</text>
+		<text x="76" y="38">C</text>
+	</g>
+	<g fill="#093" font-size="12px">
+		<text x="44" y="80">side b</text>
+		<text x="90" y="80">side a</text>
+		<text x="63" y="138">side c</text>
+	</g>
+</g>
+</svg>

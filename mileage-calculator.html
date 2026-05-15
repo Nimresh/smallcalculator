@@ -3,7 +3,7 @@
 <head>
 	<title>Mileage Calculator</title>
 	<meta name="description" content="This mileage calculator estimates the number of driving miles between two locations in the United States." />
-	<link rel="stylesheet" href="style.css" /><script src="js/common.js" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="stylesheet" href="style.css" /><script src="js/common.js?v=20260515-final" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
 	<link rel="manifest" href="manifest.json">	<link rel="canonical" href="https://smallcalculator.net/mileage-calculator.html" />
@@ -28,7 +28,8 @@
 <div class="clear"></div><div id="contentout"><div id="content"><div id="breadcrumbs" itemscope itemtype="https://schema.org/BreadcrumbList"><span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="index.html" itemprop="item"><span itemprop="name">home</span></a><meta itemprop="position" content="1" /></span> / <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="other-calculator.html" itemprop="item"><span itemprop="name">other</span></a><meta itemprop="position" content="2" /></span> / <span itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a href="mileage-calculator.html" itemprop="item"><span itemprop="name">mileage calculator</span></a><meta itemprop="position" content="3" /></span></div>		<h1>Mileage Calculator</h1>
 
 <p>Use the following mileage calculator to determine the travel distance, in terms of miles, and time taken by car to travel between two locations in the United States, disregarding traffic conditions.</p>
-<form name="mileageF" method="post">
+<p class="smalltext">Mileage calculation requires a live distance service and is currently unavailable on this static site.</p>
+<form name="mileageF" onsubmit="alert('Mileage calculation requires a live distance service and is currently unavailable.'); return false;">
 <table align="center" class="panel" cellpadding="5">
 	<tr>
 		<td>From:</td>
@@ -39,12 +40,12 @@
 		<td><input type="text" id="toAddress" name="to" value="Boston" style="width: 500px;" /></td>
 	</tr>
   <tr>
-		<td colspan="2" align="center"><input type="hidden" name="validateID" value="123536"><input name="submits" type="button" value="Get Mileage & Driving Time" onClick="validateForm();" style="background-color: #4c7b25;" /></td>
+		<td colspan="2" align="center"><input type="hidden" name="validateID" value="123536"><input name="submits" type="button" value="Get Mileage & Driving Time" onClick="validateForm();" style="background-color: #4c7b25;" disabled /></td>
 	</tr>
 </table>
 </form>
 <script type="text/javascript">
-function validateForm() {document.mileageF.validateID.value = String(this.location).toLowerCase(); document.mileageF.submit();}
+function validateForm() {alert('Mileage calculation requires a live distance service and is currently unavailable.'); return false;}
 </script>
 <br><br>
 <fieldset><legend>Related</legend>

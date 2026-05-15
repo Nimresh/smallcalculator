@@ -3,7 +3,7 @@
 <head>
 	<title>Create an Account | SmallCalculator.net</title>
 	<meta name="description" content="Create a SmallCalculator.net account for saved calculator features." />
-	<link rel="stylesheet" href="../style.css" /><script src="../js/common.js" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+	<link rel="stylesheet" href="../style.css" /><script src="../js/common.js?v=20260515-final" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="../icon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="../icon-16x16.png">
 	<link rel="manifest" href="../manifest.json">	<link rel="canonical" href="https://smallcalculator.net/my-account/create-account.html" />
@@ -30,7 +30,7 @@
 <div class="smalltext"><a href="../index.html">home</a> / <a href="create-account.html">sign up</a></div>
 
 <h1>Create an Account</h1><p>Please complete the form below to become a member of SmallCalculator.net.</p><div class="clefthalf">
-	<div class="panel"><form name="rF" method="post">
+	<div class="panel"><form name="rF" onsubmit="alert('Account registration is coming soon.'); return false;">
 	<table cellpadding="2">
 		<tr>
 			<td>
@@ -64,7 +64,8 @@
 		</tr>
 		<tr>
 			<td>
-				<p><input type="submit" name="submit" value="Register" onClick="return vTerm();"> <input type="reset" name="reset" value="Reset"></p>
+				<p><input type="submit" name="submit" value="Register" disabled> <input type="reset" name="reset" value="Reset"></p>
+				<p class="smalltext">Account registration is coming soon. No account data is processed or stored on this static site.</p>
 			</td>
 		</tr>
 	</table>

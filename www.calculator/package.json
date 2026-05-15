@@ -1,0 +1,14 @@
+{
+  "name": "smallcalculator-static-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/qa-site.mjs --build",
+    "lint": "node scripts/qa-site.mjs --lint",
+    "typecheck": "node scripts/qa-site.mjs --typecheck",
+    "test": "node scripts/qa-site.mjs --test",
+    "qa": "node scripts/qa-site.mjs --all",
+    "serve": "node scripts/static-server.mjs"
+  }
+}

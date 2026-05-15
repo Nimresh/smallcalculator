@@ -3,7 +3,7 @@
 <head>
 	<title>TDEE Calculator</title>
 	<meta name="description" content="This calculator estimates the Total Daily Energy Expenditure (TDEE) of a person based on their age, physical characteristics, and activity level." />
-	<link rel="stylesheet" href="style.css" /><script src="js/common.js" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="stylesheet" href="style.css" /><script src="js/common.js?v=20260515-final" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
 	<link rel="manifest" href="manifest.json">	<link rel="canonical" href="https://smallcalculator.net/tdee-calculator.html" />
@@ -92,7 +92,7 @@
 				<label for="coutunit2" class="cbcontainer"><input type="radio" name="coutunit" id="coutunit2" value="j"  /><span class="rbmark"></span> Kilojoules</label>
 			</div>
 
-			<div style="padding-top:15px;"><b>BMR estimation formula:</b> <img alt="" class="ttimg" src="img/svg/help.svg" onmouseover="tooltip.show('The Katch-McArdle Formula can be more accurate if you are lean and know your body fat percentage.', '');" onmouseout="tooltip.hide();"></div>
+			<div style="padding-top:15px;"><b>BMR estimation formula:</b> <img alt="" class="ttimg" src="img/svg/help.svg" onmouseover="tooltip.show('The Katch-McArdle Formula can be more accurate if you are lean and know your body fat percentage.', '');" onmouseout="tooltip.hide();" width="16" height="16"></div>
 			<div>
 				<div><label for="cformula1" class="cbcontainer"><input type="radio" name="cformula" id="cformula1" value="m" checked /><span class="rbmark"></span> Mifflin St Jeor</label></div>
 				<div><label for="cformula2" class="cbcontainer"><input type="radio" name="cformula" id="cformula2" value="k"  /><span class="rbmark"></span> Katch-McArdle</label> &nbsp; <a href="body-fat-calculator.html">Body Fat:</a> <input type="text" name="cfatpct" value="20" class="in4char inpct" onKeyUp="iptfieldCheck(this, '', 'pn');"></div>

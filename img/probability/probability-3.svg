@@ -1,0 +1,8 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200" role="img" aria-label="Probability 3">
+  <rect width="320" height="200" rx="18" fill="#f5f7fa"/>
+  <rect x="16" y="16" width="288" height="168" rx="14" fill="#ffffff" stroke="#d9e2ec"/>
+  <circle cx="86" cy="86" r="34" fill="#126b63" opacity="0.16"/>
+  <path d="M70 86h32M86 70v32" stroke="#126b63" stroke-width="8" stroke-linecap="round"/>
+  <text x="160" y="98" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#172033">Probability 3</text>
+  <text x="160" y="126" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#607086">Calculator resource</text>
+</svg>

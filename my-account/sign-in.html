@@ -3,7 +3,7 @@
 <head>
 	<title>Sign In | SmallCalculator.net</title>
 	<meta name="description" content="Sign in to SmallCalculator.net account features." />
-	<link rel="stylesheet" href="../style.css" /><script src="../js/common.js" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+	<link rel="stylesheet" href="../style.css" /><script src="../js/common.js?v=20260515-final" async></script><meta name="viewport" content="width=device-width, initial-scale=1.0">	<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="../icon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="../icon-16x16.png">
 	<link rel="manifest" href="../manifest.json">	<link rel="canonical" href="https://smallcalculator.net/my-account/sign-in.html" />
@@ -30,7 +30,7 @@
 <div class="smalltext"><a href="../index.html">home</a> / <a href="sign-in.html">sign in</a></div>
 <h1>Sign In</h1>
 <div class="clefthalf">
-	<div class="panel"><form name="signinForm" method="post" action="../my-account/sign-in.html">
+	<div class="panel"><form name="signinForm" onsubmit="alert('Account sign-in is coming soon.'); return false;">
 		<table>
 			<tr>
 				<td>Email: </td>
@@ -45,7 +45,7 @@
 				<td><label for="rememberme"><input name="rememberme" id="rememberme" type="checkbox" value="1" checked> stay signed in</label></td>
 			</tr>
 			<tr>
-				<td colspan="2" align="center"><input type="submit" name="submit" value="&nbsp; Sign In &nbsp; "> <input type="reset" name="reset" value="Clear"><p><a href="forget.html">Forget password?</a><br>New user? <a href="create-account.html">Create a free account</a></p></td>
+				<td colspan="2" align="center"><input type="submit" name="submit" value="&nbsp; Sign In &nbsp; " disabled> <input type="reset" name="reset" value="Clear"><p class="smalltext">Account sign-in is coming soon. No authentication is processed on this static site.</p><p><a href="forget.html">Forget password?</a><br>New user? <a href="create-account.html">Create a free account</a></p></td>
 			</tr>
 		</table>
 	</form></div>
